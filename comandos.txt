@@ -1,0 +1,93 @@
+composer create-project laravel/laravel:^8.0 mapache_itch_mapa
+code mapache_itch_mapa
+composer require infyomlabs/laravel-ui-stisla
+php artisan ui stisla --auth
+php artisan ui stisla  //No se si va
+npm audit fix
+npm audit fix --force
+npm audit fix
+npm uninstall webpack --save-dev
+npm install webpack --save-dev --force
+php artisan ui stisla-fortify --auth
+npm install sass-loader@latest --save-dev
+npm install
+npm run dev
+composer require spatie/laravel-permission
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan optimize:clear
+php artisan migrate
+composer require laravelcollective/html
+
+
+
+chat:
+PS C:\Users\ataff\OneDrive\Documentos\ITCH\Residencia\mapache_itch_mapa> npm run dev
+
+dev npm run development
+
+development cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js
+
+[webpack-cli] Error: Unknown option '--hide-modules' [webpack-cli] Run 'webpack --help' to see available commands and options
+
+Respuesta:
+To resolve the issue with the --hide-modules option, you need to remove it from both the development and production scripts in your package.json file.
+
+Here is the updated package.json:
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "watch-poll": "npm run watch -- --watch-poll",
+        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
+    },
+    "devDependencies": {
+        "axios": "^1.7.7",
+        "cross-env": "^7.0",
+        "laravel-mix": "^6.0.49",
+        "lodash": "^4.17.19",
+        "resolve-url-loader": "^5.0.0",
+        "webpack": "^5.95.0"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.13.1",
+        "bootstrap": "^5.3.3",
+        "datatables.net-dt": "^1.10.21",
+        "izitoast": "^1.4.0",
+        "jquery": "^3.2",
+        "jquery.nicescroll": "^3.7.6",
+        "jsrender": "^1.0.5",
+        "popper.js": "^1.12",
+        "sass": "^1.15.2",
+        "sass-loader": "^7.1.0",
+        "select2": "^4.0.13",
+        "sweetalert": "^1.1.3",
+        "vue": "^2.5.17",
+        "vue-template-compiler": "^0.1.0"
+    }
+}
+After making these changes, save the file and run the npm run dev command again.
+
+
+
+
+
+Instalé lo siguiente pero obtuve errores: PS C:\Users\ataff\OneDrive\Documentos\ITCH\Residencia\mapache_itch_mapa> npm install npm ERR! code ERESOLVE npm ERR!...
+
+
+El error que estás viendo es debido a un conflicto de dependencias entre sass-loader y webpack. sass-loader@7.3.1 requiere webpack@^3.0.0 || ^4.0.0, pero tienes webpack@5.95.0 instalado.
+
+Para resolver este problema, puedes actualizar sass-loader a una versión compatible con webpack@5.x. Aquí tienes los pasos:
+
+Actualiza sass-loader a una versión compatible con webpack@5.x. La versión más reciente de sass-loader debería ser compatible.
+npm install sass-loader@latest --save-dev
+
+Luego, intenta instalar las dependencias nuevamente.
+npm install
+
+En caso de tener errores
+npm audit fix
+npm fund

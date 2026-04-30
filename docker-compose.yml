@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mapache_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/apache/laravel.conf:/etc/apache2/sites-available/000-default.conf
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - mapache_net
+
+  db:
+    image: mysql:8.0
+    container_name: mapache_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mapache_itch_bd
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: ""
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mapache_net
+
+volumes:
+  db_data:
+
+networks:
+  mapache_net:
+    driver: bridge
