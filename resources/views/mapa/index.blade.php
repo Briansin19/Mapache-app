@@ -45,7 +45,7 @@
                                     <p>{{ $evento->descripcion }}</p>
                                     <p><strong>Inicio:</strong> {{ $evento->fecha_inicio }}</p>
                                     <p><strong>Fin:</strong> {{ $evento->fecha_fin }}</p>
-                                    <p><strong>Habitación:</strong> {{ $evento->habitacion->nombre }}</p>
+                                    <p><strong>Habitación:</strong> {{ $evento->habitacion ? $evento->habitacion->nombre : 'Sin habitación' }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -132,15 +132,17 @@
 
     // Inicialización del mapa
     const mymap = L.map('mapid', {
-        maxZoom: 25,
-        minZoom: 15,
+        maxZoom: 20,
+        minZoom: 17,
         maxBounds: bounds,
-        maxBoundsViscosity: 1.0
-    }).setView([18.518600449854645, -88.30217242054088], 18.3);
+        maxBoundsViscosity: 1.0,
+        bounceAtZoomLimits: false
+    }).setView([18.518600449854645, -88.30217242054088], 17);
 
     // Capa base de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 30,
+    L.tileLayer('https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        maxNativeZoom: 20,
         attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
     }).addTo(mymap);
 
@@ -161,23 +163,68 @@
     // Grupo de marcadores para rutas
     const markerGroup = L.layerGroup().addTo(mymap);
     const waypoints = [];
+    const markers = [];
 
     // Escuchar clics en el mapa para definir ruta
     mymap.on('click', e => {
         if (waypoints.length < 2) {
             waypoints.push(e.latlng);
-            L.marker(e.latlng).addTo(markerGroup);
+            
+            const marker = L.marker(e.latlng).addTo(markerGroup);
+            markers.push(marker);
+
+            marker.on('click', function(ev) {
+                L.DomEvent.stopPropagation(ev); // Evita que el clic se propague al mapa
+                const idx = markers.indexOf(marker);
+                if (idx !== -1) {
+                    waypoints.splice(idx, 1);
+                    markers.splice(idx, 1);
+                    markerGroup.removeLayer(marker);
+
+                    // Borrar la ruta si ya no hay 2 puntos
+                    if (currentRouteLine) {
+                        mymap.removeLayer(currentRouteLine);
+                        currentRouteLine = null;
+                    }
+
+                    document.getElementById('instructionsButton').style.display = 'none';
+                }
+            });
+
         } else {
             waypoints.shift();
+            const oldMarker = markers.shift();
+            markerGroup.removeLayer(oldMarker);
+
             waypoints.push(e.latlng);
-            markerGroup.clearLayers();
-            waypoints.forEach(waypoint => L.marker(waypoint).addTo(markerGroup));
-        }
+            const marker = L.marker(e.latlng).addTo(markerGroup);
+            markers.push(marker);
+
+        marker.on('click', function(ev) {
+            L.DomEvent.stopPropagation(ev);
+            const idx = markers.indexOf(marker);
+            if (idx !== -1) {
+                waypoints.splice(idx, 1);
+                markers.splice(idx, 1);
+                markerGroup.removeLayer(marker);
+
+                if (currentRouteLine) {
+                    mymap.removeLayer(currentRouteLine);
+                    currentRouteLine = null;
+                }
+
+                document.getElementById('instructionsButton').style.display = 'none';
+            }
+        });
+    }
 
         if (waypoints.length === 2) fetchRoute(waypoints);
     });
 
     // Función para obtener y mostrar ruta
+
+    let currentRouteLine = null;
+
     function fetchRoute(waypoints) {
         const [start, end] = waypoints;
         const url = `https://api.openrouteservice.org/v2/directions/wheelchair?api_key=5b3ce3597851110001cf6248dda04588db7d4f51ab965532e2f67166&start=${start.lng},${start.lat}&end=${end.lng},${end.lat}&language=es`;
@@ -189,8 +236,18 @@
             })
             .then(data => {
                 const route = data.features[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
-                const routeLine = L.polyline(route, { color: 'blue' }).addTo(mymap);
-                mymap.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+                
+                if (currentRouteLine) {
+
+                mymap.removeLayer(currentRouteLine);
+
+                }
+
+                currentRouteLine = L.polyline(route, { color: 'blue' }).addTo(mymap);
+                mymap.fitBounds(currentRouteLine.getBounds(), {
+                     padding: [50, 50],
+                     maxZoom: 19
+                });
 
                 // Mostrar indicaciones
                 const instructions = data.features[0].properties.segments[0].steps.map(step => step.instruction).join('<br>');

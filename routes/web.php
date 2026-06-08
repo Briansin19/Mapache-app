@@ -30,8 +30,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['permission:ver-rol|crear-rol|editar-rol|borrar-rol']], function () {
         Route::resource('roles', RolController::class);
@@ -58,7 +56,5 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('eventos', EventoController::class);
     });
 });
-
-Route::get('/mapa', [MapaController::class, 'index'])->name('mapa.index');
 
 Route::post('/firebase-login', [FirebaseAuthController::class, 'login']);
