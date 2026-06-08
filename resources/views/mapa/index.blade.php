@@ -132,17 +132,17 @@
 
     // Inicialización del mapa
     const mymap = L.map('mapid', {
-        maxZoom: 20,
-        minZoom: 17,
+        maxZoom: 22,
+        minZoom: 18,
         maxBounds: bounds,
         maxBoundsViscosity: 1.0,
         bounceAtZoomLimits: false
-    }).setView([18.518600449854645, -88.30217242054088], 17);
+    }).setView([18.518600449854645, -88.30217242054088], 18);
 
     // Capa base de OpenStreetMap
-    L.tileLayer('https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png', {
-        maxZoom: 20,
-        maxNativeZoom: 20,
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 22,
+        maxNativeZoom: 19,
         attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
     }).addTo(mymap);
 
