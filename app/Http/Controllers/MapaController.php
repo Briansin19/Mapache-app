@@ -12,8 +12,9 @@ class MapaController extends Controller
     public function index()
     {
         $edificios = Edificio::orderBy('nombre', 'asc')->get();
-        $eventos = Evento::orderBy('fecha_inicio', 'asc')->get();
+        $eventos = Evento::with('habitacion')->orderBy('fecha_inicio', 'asc')->get();
         $maestros = Personal::where('tipo', 'Docente')->orderBy('nombre', 'asc')->get();
-        return view('mapa.index', compact('edificios', 'eventos', 'maestros'));
+        $orsApiKey = env('ORS_API_KEY');
+        return view('mapa.index', compact('edificios', 'eventos', 'maestros', 'orsApiKey'));
     }
 }

@@ -9,9 +9,19 @@ use App\Models\Habitacion;
 
 class HorarioPersonalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $horarios = HorarioPersonal::paginate(10);
+        $search = $request->input('search');
+
+        $horarios = HorarioPersonal::with(['personal', 'habitacion'])
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('personal', function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%$search%");
+                });
+            })
+            ->get()
+            ->groupBy('personal_id');
+
         return view('horarios_personal.index', compact('horarios'));
     }
 
